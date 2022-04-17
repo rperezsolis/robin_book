@@ -2,10 +2,12 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:robin_book/domain/work_search/work_search.dart';
-import 'package:robin_book/ui/book_item.dart';
-import 'package:robin_book/ui/book_search_bar.dart';
+import 'package:robin_book/ui/screens/book_details/book_details_screen.dart';
+import 'package:robin_book/ui/screens/book_search/book_item.dart';
+import 'package:robin_book/ui/screens/book_search/book_search_bar.dart';
 
 class BookSearchScreen extends StatelessWidget {
+  static const routeName = 'BookSearchScreen';
   //TODO: Get workSearch value from the data layer
   final WorkSearch mockedWorkSearch = WorkSearch.fromJson(jsonDecode('''{
     "numFound": 109,
@@ -116,29 +118,40 @@ class BookSearchScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        BookSearchBar(
-          inputCallback: () {
-            //TODO: Search actual results from the api and update the ui accordingly.
-            debugPrint('Calling callback');
-          },
+    return
+      Scaffold(
+        appBar: AppBar(
+          title: const Text('Robin Book'),
         ),
-        Expanded(
-          child: GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 0.75
-              ),
-              itemCount: mockedWorkSearch.items.length,
-              itemBuilder: (BuildContext context, int index) {
-                return BookItem(
-                    workSearchItem: mockedWorkSearch.items[index]
-                );
-              }
-          )
-        )
-      ],
-    );
+        body: Column(
+          children: [
+            BookSearchBar(
+              inputCallback: () {
+                //TODO: Search actual results from the api and update the ui accordingly.
+                debugPrint('Calling callback');
+              },
+            ),
+            Expanded(
+                child: GridView.builder(
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        childAspectRatio: 0.75
+                    ),
+                    itemCount: mockedWorkSearch.items.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return GestureDetector(
+                        child: BookItem(
+                            workSearchItem: mockedWorkSearch.items[index]
+                        ),
+                        onTap: () {
+                          Navigator.pushNamed(context, BookDetailsScreen.routeName);
+                        },
+                      );
+                    }
+                )
+            )
+          ],
+        ),
+      );
   }
 }

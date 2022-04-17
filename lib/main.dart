@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:robin_book/ui/book_search_screen.dart';
+import 'package:robin_book/ui/route_manager.dart';
+import 'package:robin_book/ui/screens/book_search/book_search_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,12 +16,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.deepPurple,
       ),
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Robin Book'),
-        ),
-        body: BookSearchScreen(),
-      ),
+      initialRoute: BookSearchScreen.routeName,
+      onGenerateRoute: RouteManager().getRoutes,
     );
   }
 }
