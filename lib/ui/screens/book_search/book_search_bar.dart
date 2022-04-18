@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 class BookSearchBar extends StatefulWidget {
-  final Function() inputCallback;
+  final Function(String) inputCallback;
 
   const BookSearchBar({
     Key? key,
@@ -17,7 +17,7 @@ class BookSearchBar extends StatefulWidget {
 class _BookSearchBarState extends State<BookSearchBar> {
   late TextEditingController searchController;
   Timer? debounce;
-  late Function() inputCallback;
+  late Function(String) inputCallback;
 
   @override
   void initState() {
@@ -59,6 +59,8 @@ class _BookSearchBarState extends State<BookSearchBar> {
     if (debounce?.isActive ?? false) {
       debounce?.cancel();
     }
-    debounce = Timer(const Duration(milliseconds: 600), inputCallback);
+    debounce = Timer(const Duration(milliseconds: 600), () {
+      inputCallback.call(query);
+    });
   }
 }
