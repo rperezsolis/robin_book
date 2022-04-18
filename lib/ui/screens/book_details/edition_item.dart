@@ -33,7 +33,8 @@ class EditionItem extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
-                    edition.title
+                  edition.title,
+                  textAlign: TextAlign.center,
                 ),
               ),
               if (edition.publishDate != null)

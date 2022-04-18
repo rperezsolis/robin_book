@@ -72,6 +72,13 @@ class _BookSearchScreenState extends State<BookSearchScreen> {
                             workSearchItem: bookProvider.workSearch!.items[index]
                         ),
                         onTap: () {
+                          bookProvider.getWork(
+                            key: bookProvider.workSearch!.items[index].key
+                          );
+                          bookProvider.getWorkEditions(
+                            key: bookProvider.workSearch!.items[index].key,
+                            isFirstPage: true
+                          );
                           Navigator.pushNamed(context, BookDetailsScreen.routeName);
                         },
                       );

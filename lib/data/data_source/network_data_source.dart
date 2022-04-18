@@ -28,7 +28,7 @@ class NetworkDataSource {
   Future<Work?> getWork({
     required String key,
   }) async {
-    Uri url = Uri.parse('$baseUrl/works/$key.json');
+    Uri url = Uri.parse('$baseUrl$key.json');
     try {
       http.Response response = await http.get(url);
       Work work = Work.fromJson(jsonDecode(response.body));
@@ -43,7 +43,7 @@ class NetworkDataSource {
     required int limit,
     required int offset
   }) async {
-    Uri url = Uri.parse('$baseUrl/works/$key/editions.json'
+    Uri url = Uri.parse('$baseUrl$key/editions.json'
         '?limit=$limit&offset=$offset');
     try {
       http.Response response = await http.get(url);
@@ -57,7 +57,7 @@ class NetworkDataSource {
   Future<Author?> getAuthor({
     required String key,
   }) async {
-    Uri url = Uri.parse('$baseUrl/authors/$key.json');
+    Uri url = Uri.parse('$baseUrl$key.json');
     try {
       http.Response response = await http.get(url);
       Author author = Author.fromJson(jsonDecode(response.body));
