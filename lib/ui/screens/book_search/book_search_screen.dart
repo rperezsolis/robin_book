@@ -8,7 +8,6 @@ import 'package:robin_book/ui/state_management/book_provider.dart';
 
 class BookSearchScreen extends StatefulWidget {
   static const routeName = 'BookSearchScreen';
-  //TODO: Get workSearch value from the data layer
 
   const BookSearchScreen({Key? key}) : super(key: key);
 
@@ -45,8 +44,6 @@ class _BookSearchScreenState extends State<BookSearchScreen> {
           children: [
             BookSearchBar(
               inputCallback: (String keyword) {
-                //TODO: Search actual results from the api and update the ui accordingly.
-                debugPrint('Calling callback');
                 bookProvider.searchWorksByTitleOrAuthor(keyword: keyword,
                     isFirstPage: true);
               },
