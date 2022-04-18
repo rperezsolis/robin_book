@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:robin_book/data/network_data_source.dart';
+import 'package:robin_book/data/data_source/network_data_source.dart';
 import 'package:robin_book/domain/author/author.dart';
 import 'package:robin_book/domain/edition/work_editions.dart';
 import 'package:robin_book/domain/work/work.dart';
