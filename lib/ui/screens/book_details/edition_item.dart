@@ -35,7 +35,11 @@ class EditionItem extends StatelessWidget {
                 child: Text(
                     edition.title
                 ),
-              )
+              ),
+              if (edition.publishDate != null)
+                Text(
+                  edition.publishDate!
+                ),
             ],
           ),
         ),
