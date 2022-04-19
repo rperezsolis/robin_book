@@ -21,6 +21,9 @@ class BookProvider extends ChangeNotifier {
   bool _isLoadingNewPage = false;
   bool get isLoadingNewPage => _isLoadingNewPage;
 
+  bool _isLoadingWork = false;
+  bool get isLoadingWork => _isLoadingWork;
+
   int _workPageLimit = workPageSize;
   int _workPageOffset = 0;
   int _workEditionsPageLimit = editionPageSize;
@@ -75,8 +78,11 @@ class BookProvider extends ChangeNotifier {
   getWork({
     required String key,
   }) async {
+    _isLoadingWork = true;
+    notifyListeners();
     _currentWork = await _bookRepository.getWork(key: key);
     _currentAuthors = await _getAuthors();
+    _isLoadingWork = false;
     notifyListeners();
   }
 
