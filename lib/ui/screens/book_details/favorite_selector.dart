@@ -38,9 +38,22 @@ class _FavoriteSelectorState extends State<FavoriteSelector> {
           favoriteWork = await workDatabase
               .getFavoriteBook(key: widget.work.key);
           if (favoriteWork == null) {
-            await workDatabase.addFavoriteBook(work: widget.work);
+            int? id = await workDatabase.addFavoriteBook(work: widget.work);
+            if (id != null) {
+              const snackBar = SnackBar(
+                content: Text('Book added to favorites'),
+              );
+              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+            }
           } else {
-            await workDatabase.deleteFavoriteBook(key: widget.work.key);
+            int? deletedItems = await workDatabase
+                .deleteFavoriteBook(key: widget.work.key);
+            if (deletedItems != null) {
+              const snackBar = SnackBar(
+                content: Text('Book deleted from favorites'),
+              );
+              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+            }
           }
           FavoriteWork? favoriteWorkFromDB = await workDatabase
               .getFavoriteBook(key: widget.work.key);

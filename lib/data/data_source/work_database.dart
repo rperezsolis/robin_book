@@ -22,6 +22,8 @@ class WorkDatabase extends _$WorkDatabase {
 
   Future<List<FavoriteWork>> get allFavoriteWorks => select(favoriteWorks).get();
 
+  Stream<List<FavoriteWork>> get watchAllFavoriteWorks => select(favoriteWorks).watch();
+
   Future<FavoriteWork?> getFavoriteBook({
     required String key
   }) async {

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:robin_book/ui/screens/book_details/book_details_screen.dart';
 import 'package:robin_book/ui/screens/book_search/book_item.dart';
 import 'package:robin_book/ui/screens/book_search/book_search_bar.dart';
+import 'package:robin_book/ui/screens/favorites/favorites_screen.dart';
 import 'package:robin_book/ui/state_management/book_provider.dart';
 
 class BookSearchScreen extends StatefulWidget {
@@ -39,6 +40,24 @@ class _BookSearchScreenState extends State<BookSearchScreen> {
       Scaffold(
         appBar: AppBar(
           title: const Text('Robin Book'),
+          actions: [
+            PopupMenuButton<String>(
+              onSelected: (String value) {
+                Navigator.pushNamed(
+                  context,
+                  FavoritesScreen.routeName
+                );
+              },
+              itemBuilder: (BuildContext context) {
+                return {'Go to Favorites'}.map((String choice) {
+                  return PopupMenuItem<String>(
+                    value: choice,
+                    child: Text(choice),
+                  );
+                }).toList();
+              },
+            ),
+          ],
         ),
         body: Column(
           children: [
