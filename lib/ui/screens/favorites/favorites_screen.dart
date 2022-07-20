@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:robin_book/data/data_source/work_database.dart';
-import 'package:robin_book/domain/work/work.dart';
+import 'package:robin_book/data/data_source/local/work_database.dart';
+import 'package:robin_book/domain/models/work/work.dart';
 import 'package:robin_book/ui/screens/book_search/book_item.dart';
-import 'package:robin_book/domain/work_search/work_search_item.dart';
+import 'package:robin_book/domain/models/work_search/work_search_item.dart';
 
 class FavoritesScreen extends StatefulWidget {
   static const routeName = 'FavoritesScreen';
@@ -20,7 +20,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
   @override
   void initState() {
     super.initState();
-    workDatabase = Provider.of<WorkDatabase>(context, listen: false);
+    workDatabase = WorkDatabase();
   }
 
   @override

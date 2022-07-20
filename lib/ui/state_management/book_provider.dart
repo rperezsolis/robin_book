@@ -1,16 +1,22 @@
 import 'package:flutter/foundation.dart';
-import 'package:robin_book/data/repository/book_repository.dart';
-import 'package:robin_book/domain/author/author.dart';
-import 'package:robin_book/domain/edition/work_editions.dart';
-import 'package:robin_book/domain/work/work.dart';
-import 'package:robin_book/domain/work/work_author.dart';
-import 'package:robin_book/domain/work_search/work_search.dart';
+import 'package:robin_book/domain/models/author/author.dart';
+import 'package:robin_book/domain/models/edition/work_editions.dart';
+import 'package:robin_book/domain/models/work/work.dart';
+import 'package:robin_book/domain/models/work/work_author.dart';
+import 'package:robin_book/domain/models/work_search/work_search.dart';
+import 'package:robin_book/domain/use_cases/get_author_use_case.dart';
+import 'package:robin_book/domain/use_cases/get_work_editions_use_case.dart';
+import 'package:robin_book/domain/use_cases/get_work_use_case.dart';
+import 'package:robin_book/domain/use_cases/search_works_by_title_or_author_use_case.dart';
 
 class BookProvider extends ChangeNotifier {
   static const workPageSize = 20;
   static const editionPageSize = 10;
 
-  final BookRepository _bookRepository;
+  final GetAuthorUseCase _getAuthorUseCase;
+  final GetWorkEditionsUseCase _getWorkEditionsUseCase;
+  final GetWorkUseCase _getWorkUseCase;
+  final SearchBooksByTitleOrAuthorUseCase _searchBooksByTitleOrAuthorUseCase;
 
   WorkSearch? _workSearch;
   WorkSearch? get workSearch => _workSearch;
@@ -40,18 +46,27 @@ class BookProvider extends ChangeNotifier {
   WorkEditions? _currentWorkEditions;
   WorkEditions? get currentWorkEditions => _currentWorkEditions;
 
-  BookProvider({required bookRepository})
-      : _bookRepository = bookRepository;
+  BookProvider({
+    required GetAuthorUseCase getAuthorUseCase,
+    required GetWorkEditionsUseCase getWorkEditionsUseCase,
+    required GetWorkUseCase getWorkUseCase,
+    required SearchBooksByTitleOrAuthorUseCase searchBooksByTitleOrAuthorUseCase
+  })
+      : _getAuthorUseCase = getAuthorUseCase,
+        _getWorkEditionsUseCase = getWorkEditionsUseCase,
+        _getWorkUseCase = getWorkUseCase,
+        _searchBooksByTitleOrAuthorUseCase = searchBooksByTitleOrAuthorUseCase;
 
   searchWorksByTitleOrAuthor({
-    required String keyword,
-    required bool isFirstPage
+    required bool isFirstPage,
+    required String keyword
   }) async {
     lastKeyword = keyword;
     if (isFirstPage) {
+      reset();
       _isLoadingFirstPage = true;
       notifyListeners();
-      _workSearch = await _bookRepository.searchWorksByTitleOrAuthor(
+      _workSearch = await _searchBooksByTitleOrAuthorUseCase.invoke(
           keyword: keyword,
           limit: workPageSize,
           offset: 0
@@ -59,7 +74,7 @@ class BookProvider extends ChangeNotifier {
     } else {
       _isLoadingNewPage = true;
       notifyListeners();
-      WorkSearch? newWorkSearch = await _bookRepository.searchWorksByTitleOrAuthor(
+      WorkSearch? newWorkSearch = await _searchBooksByTitleOrAuthorUseCase.invoke(
           keyword: keyword,
           limit: _workPageLimit + workPageSize,
           offset: _workPageOffset + workPageSize
@@ -80,7 +95,7 @@ class BookProvider extends ChangeNotifier {
   }) async {
     _isLoadingWork = true;
     notifyListeners();
-    _currentWork = await _bookRepository.getWork(key: key);
+    _currentWork = await _getWorkUseCase.invoke(key: key);
     _currentAuthors = await _getAuthors();
     _isLoadingWork = false;
     notifyListeners();
@@ -91,13 +106,13 @@ class BookProvider extends ChangeNotifier {
     required bool isFirstPage
   }) async {
     if (isFirstPage) {
-      _currentWorkEditions = await _bookRepository.getWorkEditions(
+      _currentWorkEditions = await _getWorkEditionsUseCase.invoke(
           key: key,
           limit: editionPageSize,
           offset: 0
       );
     } else {
-      WorkEditions? newWorkEditions = await _bookRepository.getWorkEditions(
+      WorkEditions? newWorkEditions = await _getWorkEditionsUseCase.invoke(
           key: key,
           limit: _workEditionsPageLimit + editionPageSize,
           offset: _workEditionsPageOffset + editionPageSize
@@ -115,7 +130,7 @@ class BookProvider extends ChangeNotifier {
     if(_currentWork?.authors != null) {
       List<Author> authors = [];
       for(WorkAuthor workAuthor in _currentWork!.authors!) {
-        Author? author = await _bookRepository.getAuthor(key: workAuthor.authorKey.key);
+        Author? author = await _getAuthorUseCase.invoke(key: workAuthor.authorKey.key);
         if (author != null) {
           authors.add(author);
         }
@@ -130,6 +145,10 @@ class BookProvider extends ChangeNotifier {
     _currentWork = null;
     _currentWorkEditions = null;
     _currentAuthors = null;
+    _workPageLimit = workPageSize;
+    _workPageOffset = 0;
+    _workEditionsPageLimit = editionPageSize;
+    _workEditionsPageOffset = 0;
     notifyListeners();
   }
 }

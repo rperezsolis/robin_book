@@ -1,5 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:robin_book/domain/work/work_author.dart';
+import 'package:robin_book/domain/models/work/work_author.dart';
 
 part 'work.g.dart';
 

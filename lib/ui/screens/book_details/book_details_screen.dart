@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:robin_book/data/data_source/work_database.dart';
-import 'package:robin_book/domain/author/author.dart';
-import 'package:robin_book/domain/edition/work_editions.dart';
-import 'package:robin_book/domain/enums/picture_size.dart';
-import 'package:robin_book/domain/work/work.dart';
+import 'package:robin_book/domain/models/author/author.dart';
+import 'package:robin_book/domain/models/edition/work_editions.dart';
+import 'package:robin_book/domain/models/enums/picture_size.dart';
+import 'package:robin_book/domain/models/work/work.dart';
 import 'package:robin_book/ui/screens/book_details/edition_item.dart';
 import 'package:robin_book/ui/screens/book_details/favorite_selector.dart';
 import 'package:robin_book/ui/state_management/book_provider.dart';
@@ -24,15 +23,12 @@ class BookDetailsScreen extends StatefulWidget {
 
 class _BookDetailsScreenState extends State<BookDetailsScreen> {
   late BookProvider bookProvider;
-  late WorkDatabase workDatabase;
   late ScrollController editionsScrollController;
-  FavoriteWork? favoriteWork;
 
   @override
   void initState() {
     super.initState();
     bookProvider = Provider.of<BookProvider>(context, listen: false);
-    workDatabase = Provider.of<WorkDatabase>(context, listen: false);
     editionsScrollController = ScrollController()..addListener(() {
       double maxScroll = editionsScrollController.position.maxScrollExtent;
       double currentScroll = editionsScrollController.position.pixels;
@@ -45,6 +41,12 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
         }
       }
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    editionsScrollController.dispose();
   }
 
   @override

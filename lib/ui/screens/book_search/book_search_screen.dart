@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
@@ -28,8 +30,10 @@ class _BookSearchScreenState extends State<BookSearchScreen> {
       double maxScroll = scrollController.position.maxScrollExtent;
       double currentScroll = scrollController.position.pixels;
       if (maxScroll == currentScroll) {
-        bookProvider.searchWorksByTitleOrAuthor(keyword: bookProvider.lastKeyword,
-            isFirstPage: false);
+        bookProvider.searchWorksByTitleOrAuthor(
+            isFirstPage: false,
+            keyword: bookProvider.lastKeyword
+        );
       }
     });
   }
@@ -63,8 +67,14 @@ class _BookSearchScreenState extends State<BookSearchScreen> {
           children: [
             BookSearchBar(
               inputCallback: (String keyword) {
-                bookProvider.searchWorksByTitleOrAuthor(keyword: keyword,
-                    isFirstPage: true);
+                if (scrollController.hasClients) {
+                  scrollController.animateTo(0, duration: const Duration(milliseconds: 500),
+                      curve: Curves.ease);
+                }
+                bookProvider.searchWorksByTitleOrAuthor(
+                    isFirstPage: true,
+                    keyword: keyword
+                );
               },
             ),
             Consumer<BookProvider>(builder: (BuildContext context,

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:drift/drift.dart';
-import 'package:robin_book/domain/work/work.dart';
+import 'package:robin_book/domain/models/work/work.dart';
 
 class WorkConverter extends TypeConverter<Work, String> {
 

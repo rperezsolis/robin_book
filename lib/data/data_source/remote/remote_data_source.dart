@@ -1,12 +1,12 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:robin_book/domain/author/author.dart';
-import 'package:robin_book/domain/edition/work_editions.dart';
-import 'package:robin_book/domain/work/work.dart';
-import 'package:robin_book/domain/work_search/work_search.dart';
+import 'package:robin_book/domain/models/author/author.dart';
+import 'package:robin_book/domain/models/edition/work_editions.dart';
+import 'package:robin_book/domain/models/work/work.dart';
+import 'package:robin_book/domain/models/work_search/work_search.dart';
 
-class NetworkDataSource {
+class RemoteDataSource {
   static const baseUrl = 'https://openlibrary.org';
 
   Future<WorkSearch?> searchWorksByTitleOrAuthor({

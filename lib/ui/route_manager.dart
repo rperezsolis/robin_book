@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:robin_book/domain/work/work.dart';
+import 'package:robin_book/domain/models/work/work.dart';
 import 'package:robin_book/ui/screens/book_details/book_details_screen.dart';
 import 'package:robin_book/ui/screens/book_search/book_search_screen.dart';
 import 'package:robin_book/ui/screens/favorites/favorites_screen.dart';
