@@ -8,6 +8,10 @@ class FavoriteWorkRepository {
     required WorkDatabase workDatabase
   }) : _workDatabase = workDatabase;
 
+  Future<List<FavoriteWork>> getAllFavoriteWorks() async {
+    return _workDatabase.allFavoriteWorks;
+  }
+
   Future<FavoriteWork?> getFavoriteWork({
     required String key
   }) async {

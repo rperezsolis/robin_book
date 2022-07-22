@@ -6,6 +6,7 @@ import 'package:robin_book/domain/repository/favorite_work_repository.dart';
 import 'package:robin_book/domain/repository/work_repository.dart';
 import 'package:robin_book/domain/use_cases/favorite/add_favorite_work_use_case.dart';
 import 'package:robin_book/domain/use_cases/favorite/delete_favorite_work_use_case.dart';
+import 'package:robin_book/domain/use_cases/favorite/get_all_favorite_works_use_case.dart';
 import 'package:robin_book/domain/use_cases/favorite/get_favorite_work_use_case.dart';
 import 'package:robin_book/domain/use_cases/work/get_author_use_case.dart';
 import 'package:robin_book/domain/use_cases/work/get_work_editions_use_case.dart';
@@ -68,6 +69,11 @@ class MyApp extends StatelessWidget {
                   )
               ),
               getFavoriteWorkUseCase: GetFavoriteWorkUseCase(
+                  favoriteWorkRepository: FavoriteWorkRepository(
+                      workDatabase: WorkDatabase()
+                  )
+              ),
+              getAllFavoriteWorksUseCase: GetAllFavoriteWorksUseCase(
                   favoriteWorkRepository: FavoriteWorkRepository(
                       workDatabase: WorkDatabase()
                   )
