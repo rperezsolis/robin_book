@@ -2,14 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:robin_book/data/data_source/remote/remote_data_source.dart';
 import 'package:robin_book/data/data_source/local/work_database.dart';
-import 'package:robin_book/domain/repository/book_repository.dart';
-import 'package:robin_book/domain/use_cases/get_author_use_case.dart';
-import 'package:robin_book/domain/use_cases/get_work_editions_use_case.dart';
-import 'package:robin_book/domain/use_cases/get_work_use_case.dart';
-import 'package:robin_book/domain/use_cases/search_works_by_title_or_author_use_case.dart';
+import 'package:robin_book/domain/repository/favorite_work_repository.dart';
+import 'package:robin_book/domain/repository/work_repository.dart';
+import 'package:robin_book/domain/use_cases/favorite/add_favorite_work_use_case.dart';
+import 'package:robin_book/domain/use_cases/favorite/delete_favorite_work_use_case.dart';
+import 'package:robin_book/domain/use_cases/favorite/get_favorite_work_use_case.dart';
+import 'package:robin_book/domain/use_cases/work/get_author_use_case.dart';
+import 'package:robin_book/domain/use_cases/work/get_work_editions_use_case.dart';
+import 'package:robin_book/domain/use_cases/work/get_work_use_case.dart';
+import 'package:robin_book/domain/use_cases/work/search_works_by_title_or_author_use_case.dart';
 import 'package:robin_book/ui/route_manager.dart';
 import 'package:robin_book/ui/screens/book_search/book_search_screen.dart';
-import 'package:robin_book/ui/state_management/book_provider.dart';
+import 'package:robin_book/ui/state_management/favorite_work_provider.dart';
+import 'package:robin_book/ui/state_management/work_provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -22,29 +27,48 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ListenableProvider<BookProvider>(
-          create: (BuildContext context) => BookProvider(
+        ListenableProvider<WorkProvider>(
+          create: (BuildContext context) => WorkProvider(
               getAuthorUseCase: GetAuthorUseCase(
-                  bookRepository: BookRepository(
+                  workRepository: WorkRepository(
                       remoteDataSource: RemoteDataSource(),
                       workDatabase: WorkDatabase()
                   )
               ),
               getWorkEditionsUseCase: GetWorkEditionsUseCase(
-                  bookRepository: BookRepository(
+                  workRepository: WorkRepository(
                       remoteDataSource: RemoteDataSource(),
                       workDatabase: WorkDatabase()
                   )
               ),
               getWorkUseCase: GetWorkUseCase(
-                  bookRepository: BookRepository(
+                  workRepository: WorkRepository(
                       remoteDataSource: RemoteDataSource(),
                       workDatabase: WorkDatabase()
                   )
               ),
-              searchBooksByTitleOrAuthorUseCase: SearchBooksByTitleOrAuthorUseCase(
-                  bookRepository: BookRepository(
+              searchWorksByTitleOrAuthorUseCase: SearchWorksByTitleOrAuthorUseCase(
+                  workRepository: WorkRepository(
                       remoteDataSource: RemoteDataSource(),
+                      workDatabase: WorkDatabase()
+                  )
+              )
+          ),
+        ),
+        ListenableProvider<FavoriteWorkProvider>(
+          create: (BuildContext context) => FavoriteWorkProvider(
+              addFavoriteWorkUseCase: AddFavoriteWorkUseCase(
+                  favoriteWorkRepository: FavoriteWorkRepository(
+                      workDatabase: WorkDatabase()
+                  )
+              ),
+              deleteFavoriteWorkUseCase: DeleteFavoriteWorkUseCase(
+                  favoriteWorkRepository: FavoriteWorkRepository(
+                      workDatabase: WorkDatabase()
+                  )
+              ),
+              getFavoriteWorkUseCase: GetFavoriteWorkUseCase(
+                  favoriteWorkRepository: FavoriteWorkRepository(
                       workDatabase: WorkDatabase()
                   )
               )

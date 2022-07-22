@@ -104,7 +104,7 @@ class WorkDatabase extends _$WorkDatabase {
 
   Stream<List<FavoriteWork>> get watchAllFavoriteWorks => select(favoriteWorks).watch();
 
-  Future<FavoriteWork?> getFavoriteBook({
+  Future<FavoriteWork?> getFavoriteWork({
     required String key
   }) async {
     return await (select(favoriteWorks)..where((tbl) => tbl.key.equals(key)))
@@ -112,11 +112,11 @@ class WorkDatabase extends _$WorkDatabase {
   }
 
   ///Returns the row id of the inserted row.
-  Future<int?> addFavoriteBook({
+  Future<int?> addFavoriteWork({
     required Work work
   }) async {
     FavoriteWorksCompanion entry = _getFavoriteWorkCompanionInstance(work: work);
-    FavoriteWork? favoriteWork = await getFavoriteBook(key: entry.key.value);
+    FavoriteWork? favoriteWork = await getFavoriteWork(key: entry.key.value);
     if (favoriteWork == null) {
       return await into(favoriteWorks).insert(entry);
     } else {
@@ -125,10 +125,10 @@ class WorkDatabase extends _$WorkDatabase {
   }
 
   ///Returns the amount of rows that were deleted by this statement directly
-  Future<int?> deleteFavoriteBook({
+  Future<int?> deleteFavoriteWork({
     required String key
   }) async {
-    FavoriteWork? favoriteWork = await getFavoriteBook(key: key);
+    FavoriteWork? favoriteWork = await getFavoriteWork(key: key);
     if (favoriteWork != null) {
       return await (delete(favoriteWorks)..where((tbl) => tbl.key.equals(key))).go();
     } else {

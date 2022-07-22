@@ -5,11 +5,11 @@ import 'package:robin_book/domain/models/edition/work_editions.dart';
 import 'package:robin_book/domain/models/work/work.dart';
 import 'package:robin_book/domain/models/work_search/work_search.dart';
 
-class BookRepository {
+class WorkRepository {
   final RemoteDataSource _remoteDataSource;
   final WorkDatabase _workDatabase;
 
-  BookRepository({
+  WorkRepository({
     required RemoteDataSource remoteDataSource,
     required WorkDatabase workDatabase
   }) : _workDatabase = workDatabase,

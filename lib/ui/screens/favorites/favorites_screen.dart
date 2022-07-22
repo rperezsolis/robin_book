@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:robin_book/data/data_source/local/work_database.dart';
 import 'package:robin_book/domain/models/work/work.dart';
 import 'package:robin_book/ui/screens/book_search/book_item.dart';
@@ -63,7 +62,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                           IconButton(
                             onPressed: () async {
                               int? deletedItems = await workDatabase
-                                  .deleteFavoriteBook(key: work.key);
+                                  .deleteFavoriteWork(key: work.key);
                               if (deletedItems != null) {
                                 const snackBar = SnackBar(
                                   content: Text('Book deleted from favorites'),

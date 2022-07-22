@@ -4,19 +4,19 @@ import 'package:robin_book/domain/models/edition/work_editions.dart';
 import 'package:robin_book/domain/models/work/work.dart';
 import 'package:robin_book/domain/models/work/work_author.dart';
 import 'package:robin_book/domain/models/work_search/work_search.dart';
-import 'package:robin_book/domain/use_cases/get_author_use_case.dart';
-import 'package:robin_book/domain/use_cases/get_work_editions_use_case.dart';
-import 'package:robin_book/domain/use_cases/get_work_use_case.dart';
-import 'package:robin_book/domain/use_cases/search_works_by_title_or_author_use_case.dart';
+import 'package:robin_book/domain/use_cases/work/get_author_use_case.dart';
+import 'package:robin_book/domain/use_cases/work/get_work_editions_use_case.dart';
+import 'package:robin_book/domain/use_cases/work/get_work_use_case.dart';
+import 'package:robin_book/domain/use_cases/work/search_works_by_title_or_author_use_case.dart';
 
-class BookProvider extends ChangeNotifier {
+class WorkProvider extends ChangeNotifier {
   static const workPageSize = 20;
   static const editionPageSize = 10;
 
   final GetAuthorUseCase _getAuthorUseCase;
   final GetWorkEditionsUseCase _getWorkEditionsUseCase;
   final GetWorkUseCase _getWorkUseCase;
-  final SearchBooksByTitleOrAuthorUseCase _searchBooksByTitleOrAuthorUseCase;
+  final SearchWorksByTitleOrAuthorUseCase _searchWorksByTitleOrAuthorUseCase;
 
   WorkSearch? _workSearch;
   WorkSearch? get workSearch => _workSearch;
@@ -46,18 +46,18 @@ class BookProvider extends ChangeNotifier {
   WorkEditions? _currentWorkEditions;
   WorkEditions? get currentWorkEditions => _currentWorkEditions;
 
-  BookProvider({
+  WorkProvider({
     required GetAuthorUseCase getAuthorUseCase,
     required GetWorkEditionsUseCase getWorkEditionsUseCase,
     required GetWorkUseCase getWorkUseCase,
-    required SearchBooksByTitleOrAuthorUseCase searchBooksByTitleOrAuthorUseCase
+    required SearchWorksByTitleOrAuthorUseCase searchWorksByTitleOrAuthorUseCase
   })
       : _getAuthorUseCase = getAuthorUseCase,
         _getWorkEditionsUseCase = getWorkEditionsUseCase,
         _getWorkUseCase = getWorkUseCase,
-        _searchBooksByTitleOrAuthorUseCase = searchBooksByTitleOrAuthorUseCase;
+        _searchWorksByTitleOrAuthorUseCase = searchWorksByTitleOrAuthorUseCase;
 
-  searchWorksByTitleOrAuthor({
+  Future<void> searchWorksByTitleOrAuthor({
     required bool isFirstPage,
     required String keyword
   }) async {
@@ -66,7 +66,7 @@ class BookProvider extends ChangeNotifier {
       reset();
       _isLoadingFirstPage = true;
       notifyListeners();
-      _workSearch = await _searchBooksByTitleOrAuthorUseCase.invoke(
+      _workSearch = await _searchWorksByTitleOrAuthor(
           keyword: keyword,
           limit: workPageSize,
           offset: 0
@@ -74,7 +74,7 @@ class BookProvider extends ChangeNotifier {
     } else {
       _isLoadingNewPage = true;
       notifyListeners();
-      WorkSearch? newWorkSearch = await _searchBooksByTitleOrAuthorUseCase.invoke(
+      WorkSearch? newWorkSearch = await _searchWorksByTitleOrAuthor(
           keyword: keyword,
           limit: _workPageLimit + workPageSize,
           offset: _workPageOffset + workPageSize
@@ -88,6 +88,18 @@ class BookProvider extends ChangeNotifier {
     _isLoadingFirstPage = false;
     _isLoadingNewPage = false;
     notifyListeners();
+  }
+
+  Future<WorkSearch?> _searchWorksByTitleOrAuthor({
+    required String keyword,
+    required int limit,
+    required int offset
+  }) async {
+    return await _searchWorksByTitleOrAuthorUseCase.invoke(
+        keyword: keyword,
+        limit: limit,
+        offset: offset
+    );
   }
 
   getWork({
@@ -106,13 +118,13 @@ class BookProvider extends ChangeNotifier {
     required bool isFirstPage
   }) async {
     if (isFirstPage) {
-      _currentWorkEditions = await _getWorkEditionsUseCase.invoke(
+      _currentWorkEditions = await _getWorkEditions(
           key: key,
           limit: editionPageSize,
           offset: 0
       );
     } else {
-      WorkEditions? newWorkEditions = await _getWorkEditionsUseCase.invoke(
+      WorkEditions? newWorkEditions = await _getWorkEditions(
           key: key,
           limit: _workEditionsPageLimit + editionPageSize,
           offset: _workEditionsPageOffset + editionPageSize
@@ -124,6 +136,18 @@ class BookProvider extends ChangeNotifier {
       }
     }
     notifyListeners();
+  }
+
+  Future<WorkEditions?> _getWorkEditions({
+    required String key,
+    required int limit,
+    required int offset
+  }) async {
+    return await _getWorkEditionsUseCase.invoke(
+        key: key,
+        limit: limit,
+        offset: offset
+    );
   }
 
   Future<List<Author>?> _getAuthors() async {
