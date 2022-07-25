@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
@@ -5,8 +7,9 @@ import 'package:robin_book/ui/screens/book_details/book_details_screen.dart';
 import 'package:robin_book/ui/screens/book_search/book_item.dart';
 import 'package:robin_book/ui/screens/book_search/book_search_bar.dart';
 import 'package:robin_book/ui/screens/favorites/favorites_screen.dart';
-import 'package:robin_book/ui/state_management/book_provider.dart';
+import 'package:robin_book/ui/state_management/work_provider.dart';
 
+/// Represents the Book Search screen.
 class BookSearchScreen extends StatefulWidget {
   static const routeName = 'BookSearchScreen';
 
@@ -17,19 +20,21 @@ class BookSearchScreen extends StatefulWidget {
 }
 
 class _BookSearchScreenState extends State<BookSearchScreen> {
-  late BookProvider bookProvider;
+  late WorkProvider workProvider;
   late ScrollController scrollController;
 
   @override
   void initState() {
     super.initState();
-    bookProvider = Provider.of<BookProvider>(context, listen: false);
+    workProvider = Provider.of<WorkProvider>(context, listen: false);
     scrollController = ScrollController()..addListener(() {
       double maxScroll = scrollController.position.maxScrollExtent;
       double currentScroll = scrollController.position.pixels;
       if (maxScroll == currentScroll) {
-        bookProvider.searchWorksByTitleOrAuthor(keyword: bookProvider.lastKeyword,
-            isFirstPage: false);
+        workProvider.searchWorksByTitleOrAuthor(
+            isFirstPage: false,
+            keyword: workProvider.lastKeyword
+        );
       }
     });
   }
@@ -63,32 +68,38 @@ class _BookSearchScreenState extends State<BookSearchScreen> {
           children: [
             BookSearchBar(
               inputCallback: (String keyword) {
-                bookProvider.searchWorksByTitleOrAuthor(keyword: keyword,
-                    isFirstPage: true);
+                if (scrollController.hasClients) {
+                  scrollController.animateTo(0, duration: const Duration(milliseconds: 500),
+                      curve: Curves.ease);
+                }
+                workProvider.searchWorksByTitleOrAuthor(
+                    isFirstPage: true,
+                    keyword: keyword
+                );
               },
             ),
-            Consumer<BookProvider>(builder: (BuildContext context,
-                BookProvider bookProvider, Widget? child) {
-              if (bookProvider.isLoadingFirstPage) {
+            Consumer<WorkProvider>(builder: (BuildContext context,
+                WorkProvider workProvider, Widget? child) {
+              if (workProvider.isLoadingFirstPage) {
                 return const Expanded(
                   child: Center(
                     child: CircularProgressIndicator(),
                   ),
                 );
-              } else if (bookProvider.workSearch != null &&
-                  bookProvider.workSearch!.items.isNotEmpty) {
+              } else if (workProvider.workSearch != null &&
+                  workProvider.workSearch!.items.isNotEmpty) {
                 return Expanded(
                   child: GridView.builder(
                       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
                           childAspectRatio: 0.75
                       ),
-                      itemCount: bookProvider.workSearch!.items.length,
+                      itemCount: workProvider.workSearch!.items.length,
                       controller: scrollController,
                       itemBuilder: (BuildContext context, int index) {
                         return GestureDetector(
                           child: BookItem(
-                              workSearchItem: bookProvider.workSearch!.items[index]
+                              workSearchItem: workProvider.workSearch!.items[index]
                           ),
                           onTap: () async {
                             FocusManager.instance.primaryFocus?.unfocus();
@@ -110,19 +121,19 @@ class _BookSearchScreenState extends State<BookSearchScreen> {
                                 );
                               }
                             );
-                            await bookProvider.getWork(
-                                key: bookProvider.workSearch!.items[index].key
+                            await workProvider.getWork(
+                                key: workProvider.workSearch!.items[index].key
                             );
-                            bookProvider.getWorkEditions(
-                                key: bookProvider.workSearch!.items[index].key,
+                            workProvider.getWorkEditions(
+                                key: workProvider.workSearch!.items[index].key,
                                 isFirstPage: true
                             );
                             Navigator.of(dialogContext).pop();
-                            if (bookProvider.currentWork != null) {
+                            if (workProvider.currentWork != null) {
                               Navigator.pushNamed(
                                   context,
                                   BookDetailsScreen.routeName,
-                                  arguments: bookProvider.currentWork
+                                  arguments: workProvider.currentWork
                               );
                             }
                           },

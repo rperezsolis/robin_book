@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:robin_book/domain/edition/edition.dart';
-import 'package:robin_book/domain/enums/picture_size.dart';
+import 'package:robin_book/domain/models/edition/edition.dart';
+import 'package:robin_book/domain/models/enums/picture_size.dart';
 
 class EditionItem extends StatelessWidget {
   final Edition edition;

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:robin_book/data/data_source/work_database.dart';
-import 'package:robin_book/domain/work/work.dart';
+import 'package:robin_book/data/data_source/local/work_database.dart';
+import 'package:robin_book/domain/models/work/work.dart';
+import 'package:robin_book/ui/state_management/favorite_work_provider.dart';
 
 class FavoriteSelector extends StatefulWidget {
   final Work work;
@@ -16,54 +17,52 @@ class FavoriteSelector extends StatefulWidget {
 }
 
 class _FavoriteSelectorState extends State<FavoriteSelector> {
-  late WorkDatabase workDatabase;
-  FavoriteWork? favoriteWork;
+  late FavoriteWorkProvider favoriteWorkProvider;
 
   @override
   void initState() {
     super.initState();
-    workDatabase = Provider.of<WorkDatabase>(context, listen: false);
-    workDatabase.getFavoriteBook(key: widget.work.key)
-        .then((value) {
-          setState(() {
-            favoriteWork = value;
-          });
-        });
+    favoriteWorkProvider = Provider.of<FavoriteWorkProvider>(context, listen: false);
+    favoriteWorkProvider.getFavoriteWork(key: widget.work.key);
+    favoriteWorkProvider.addListener(_observeSnackBarMessage);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    favoriteWorkProvider.removeListener(_observeSnackBarMessage);
   }
 
   @override
   Widget build(BuildContext context) {
     return IconButton(
-        onPressed: () async {
-          favoriteWork = await workDatabase
-              .getFavoriteBook(key: widget.work.key);
-          if (favoriteWork == null) {
-            int? id = await workDatabase.addFavoriteBook(work: widget.work);
-            if (id != null) {
-              const snackBar = SnackBar(
-                content: Text('Book added to favorites'),
-              );
-              ScaffoldMessenger.of(context).showSnackBar(snackBar);
-            }
-          } else {
-            int? deletedItems = await workDatabase
-                .deleteFavoriteBook(key: widget.work.key);
-            if (deletedItems != null) {
-              const snackBar = SnackBar(
-                content: Text('Book deleted from favorites'),
-              );
-              ScaffoldMessenger.of(context).showSnackBar(snackBar);
-            }
-          }
-          FavoriteWork? favoriteWorkFromDB = await workDatabase
-              .getFavoriteBook(key: widget.work.key);
-          setState(() {
-            favoriteWork = favoriteWorkFromDB;
-          });
+        onPressed: () {
+          favoriteWorkProvider.addOrDeleteFavoriteWork(work: widget.work);
         },
-        icon: favoriteWork != null
-            ? const Icon(Icons.favorite)
-            : const Icon(Icons.favorite_border)
+        icon: Selector<FavoriteWorkProvider, FavoriteWork?>(
+          builder: (BuildContext context, FavoriteWork? favoriteWork, Widget? child) {
+            return favoriteWork != null
+                ? const Icon(Icons.favorite)
+                : const Icon(Icons.favorite_border);
+            },
+          selector: (_, favoriteWorkProvider) => favoriteWorkProvider.currentFavoriteWork,
+        ),
     );
+  }
+
+  void _observeSnackBarMessage() {
+    if (mounted && favoriteWorkProvider.snackBarMessage != null &&
+        favoriteWorkProvider.snackBarMessage!.isNotEmpty) {
+      String message = favoriteWorkProvider.snackBarMessage!;
+      favoriteWorkProvider.resetSnackBarMessage();
+      _showSnackBar(message);
+    }
+  }
+
+  void _showSnackBar(String message) {
+    SnackBar snackBar = SnackBar(
+      content: Text(message),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:robin_book/data/data_source/work_database.dart';
-import 'package:robin_book/domain/author/author.dart';
-import 'package:robin_book/domain/edition/work_editions.dart';
-import 'package:robin_book/domain/enums/picture_size.dart';
-import 'package:robin_book/domain/work/work.dart';
+import 'package:robin_book/domain/models/author/author.dart';
+import 'package:robin_book/domain/models/edition/work_editions.dart';
+import 'package:robin_book/domain/models/enums/picture_size.dart';
+import 'package:robin_book/domain/models/work/work.dart';
 import 'package:robin_book/ui/screens/book_details/edition_item.dart';
 import 'package:robin_book/ui/screens/book_details/favorite_selector.dart';
-import 'package:robin_book/ui/state_management/book_provider.dart';
+import 'package:robin_book/ui/state_management/work_provider.dart';
 
+/// Represents the Book Details screen.
 class BookDetailsScreen extends StatefulWidget {
   static const routeName = 'BookDetailsScreen';
   final Work work;
@@ -23,28 +23,31 @@ class BookDetailsScreen extends StatefulWidget {
 }
 
 class _BookDetailsScreenState extends State<BookDetailsScreen> {
-  late BookProvider bookProvider;
-  late WorkDatabase workDatabase;
+  late WorkProvider workProvider;
   late ScrollController editionsScrollController;
-  FavoriteWork? favoriteWork;
 
   @override
   void initState() {
     super.initState();
-    bookProvider = Provider.of<BookProvider>(context, listen: false);
-    workDatabase = Provider.of<WorkDatabase>(context, listen: false);
+    workProvider = Provider.of<WorkProvider>(context, listen: false);
     editionsScrollController = ScrollController()..addListener(() {
       double maxScroll = editionsScrollController.position.maxScrollExtent;
       double currentScroll = editionsScrollController.position.pixels;
       if (maxScroll == currentScroll) {
-        if (bookProvider.currentWork != null) {
-          bookProvider.getWorkEditions(
-              key: bookProvider.currentWork!.key,
+        if (workProvider.currentWork != null) {
+          workProvider.getWorkEditions(
+              key: workProvider.currentWork!.key,
               isFirstPage: false
           );
         }
       }
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    editionsScrollController.dispose();
   }
 
   @override
@@ -66,7 +69,7 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Selector<BookProvider, Work?>(
+                Selector<WorkProvider, Work?>(
                     builder: (BuildContext context, Work? work, Widget? child) {
                       if (work != null) {
                         return Column(
@@ -92,7 +95,7 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
                                 const Text(
                                     'Authors: '
                                 ),
-                                Selector<BookProvider, List<Author>?>(
+                                Selector<WorkProvider, List<Author>?>(
                                   builder: (BuildContext context, List<Author>? authors,
                                       Widget? child) {
                                     if (authors != null && authors.isNotEmpty) {
@@ -109,7 +112,7 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
                                       );
                                     }
                                   },
-                                  selector: (_, bookProvider) => bookProvider.currentAuthors,
+                                  selector: (_, workProvider) => workProvider.currentAuthors,
                                 ),
                               ],
                             ),
@@ -159,14 +162,14 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
                         );
                       }
                     },
-                    selector: (_, bookProvider) => bookProvider.currentWork
+                    selector: (_, workProvider) => workProvider.currentWork
                 ),
                 const Text(
                     'Editions: '
                 ),
                 SizedBox(
                   height: 300,
-                  child: Selector<BookProvider, WorkEditions?>(
+                  child: Selector<WorkProvider, WorkEditions?>(
                     builder: (BuildContext context, WorkEditions? workEditions, Widget? child) {
                       if (workEditions != null) {
                         return ListView.builder(
@@ -188,7 +191,7 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
                         );
                       }
                     },
-                    selector: (_, bookProvider) => bookProvider.currentWorkEditions,
+                    selector: (_, workProvider) => workProvider.currentWorkEditions,
                   ),
                 )
               ],
@@ -197,7 +200,7 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
         ),
       ),
       onWillPop: () async {
-        bookProvider.reset();
+        workProvider.resetWorkEditions();
         return true;
       }
     );
