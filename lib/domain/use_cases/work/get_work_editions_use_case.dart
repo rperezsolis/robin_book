@@ -1,12 +1,15 @@
 import 'package:robin_book/domain/models/edition/work_editions.dart';
 import 'package:robin_book/domain/repository/work_repository.dart';
 
+/// Use case for retrieving the work editions of a work.
 class GetWorkEditionsUseCase {
   final WorkRepository _workRepository;
 
-  GetWorkEditionsUseCase({required workRepository})
-      : _workRepository = workRepository;
+  GetWorkEditionsUseCase({
+    required WorkRepository workRepository
+  }) : _workRepository = workRepository;
 
+  /// Returns the [WorkEditions] related to the [key], [limit], and [offset].
   Future<WorkEditions?> invoke({
     required String key,
     required int limit,

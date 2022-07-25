@@ -11,18 +11,21 @@ import 'package:robin_book/domain/models/work_search/work_search_converter.dart'
 
 part 'work_database.g.dart';
 
+/// Class for saving in cache the book searches the user does.
 class WorkSearches extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get compositeId => text()();
   TextColumn get workSearch => text().map(WorkSearchConverter()).nullable()();
 }
 
+/// Class for saving in cache the books the user saves as favorites.
 class FavoriteWorks extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get key => text()();
   TextColumn get work => text().map(WorkConverter()).nullable()();
 }
 
+/// This class is the local datasource for books.
 @DriftDatabase(tables: [WorkSearches, FavoriteWorks])
 class WorkDatabase extends _$WorkDatabase {
 
@@ -36,6 +39,8 @@ class WorkDatabase extends _$WorkDatabase {
   ///------------------------ Work Searches ------------------------
 
 
+  /// Returns a [WorkSearch] identified by a combination of the [keyword],
+  /// [limit], and [offset].
   Future<WorkSearch?> getWorkSearch({
     required String keyword,
     required int limit,
@@ -51,6 +56,8 @@ class WorkDatabase extends _$WorkDatabase {
     return workSearchEntity?.workSearch;
   }
 
+  /// Saves a [WorkSearch] identified by a combination of the [keyword],
+  /// [limit], and [offset]. Returns the row id [int] of the inserted row.
   Future<int?> addWorkSearch({
     required String keyword,
     required int limit,
@@ -78,6 +85,9 @@ class WorkDatabase extends _$WorkDatabase {
     }
   }
 
+  /// Returns a composite id meant to be the identifier of a [WorkSearch].
+  /// The resultant id is a concatenation of the values for [keyword], [limit],
+  /// and [offset].
   String _createWorkSearchCompositeId({
     required String keyword,
     required int limit,
@@ -100,10 +110,13 @@ class WorkDatabase extends _$WorkDatabase {
   ///------------------------ Favorite Works ------------------------
 
 
+  /// Returns a list of all the saved favorite works.
   Future<List<FavoriteWork>> get allFavoriteWorks => select(favoriteWorks).get();
 
+  /// Returns a stream that contains a list of all the saved favorite works.
   Stream<List<FavoriteWork>> get watchAllFavoriteWorks => select(favoriteWorks).watch();
 
+  /// Returns a [FavoriteWork] related to the [key] if any.
   Future<FavoriteWork?> getFavoriteWork({
     required String key
   }) async {
@@ -111,7 +124,8 @@ class WorkDatabase extends _$WorkDatabase {
         .getSingleOrNull();
   }
 
-  ///Returns the row id of the inserted row.
+  /// Saves a [FavoriteWork] based on the value of [work]. Returns the row id of
+  /// the inserted row.
   Future<int?> addFavoriteWork({
     required Work work
   }) async {
@@ -124,7 +138,8 @@ class WorkDatabase extends _$WorkDatabase {
     }
   }
 
-  ///Returns the amount of rows that were deleted by this statement directly
+  /// Deletes a [FavoriteWork] related to the [key] if any. Returns the amount
+  /// of rows that were deleted.
   Future<int?> deleteFavoriteWork({
     required String key
   }) async {
@@ -145,9 +160,12 @@ class WorkDatabase extends _$WorkDatabase {
     );
   }
 
+  /// Version of the database schema.
   @override
   int get schemaVersion => 2;
 
+  /// Migration instructions. These are executed automatically when Drift detects
+  /// there is a change on the [schemaVersion].
   @override
   MigrationStrategy get migration {
     return MigrationStrategy(
@@ -163,6 +181,7 @@ class WorkDatabase extends _$WorkDatabase {
   }
 }
 
+/// Returns the database instance.
 LazyDatabase _openConnection() {
   // the LazyDatabase util lets us find the right location for the file async.
   return LazyDatabase(() async {

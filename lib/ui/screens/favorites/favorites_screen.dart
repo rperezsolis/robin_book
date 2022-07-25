@@ -5,6 +5,7 @@ import 'package:robin_book/ui/screens/book_search/book_item.dart';
 import 'package:robin_book/domain/models/work_search/work_search_item.dart';
 import 'package:robin_book/ui/state_management/favorite_work_provider.dart';
 
+/// Represents the Favorite Books screen.
 class FavoritesScreen extends StatefulWidget {
   static const routeName = 'FavoritesScreen';
 

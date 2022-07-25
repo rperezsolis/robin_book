@@ -6,9 +6,11 @@ import 'package:robin_book/domain/models/edition/work_editions.dart';
 import 'package:robin_book/domain/models/work/work.dart';
 import 'package:robin_book/domain/models/work_search/work_search.dart';
 
+/// Class for communicating to the OpenLibrary api.
 class RemoteDataSource {
   static const baseUrl = 'https://openlibrary.org';
 
+  /// Returns a [WorkSearch] related the the [keyword], [limit], and [offset].
   Future<WorkSearch?> searchWorksByTitleOrAuthor({
     required String keyword,
     required int limit,
@@ -25,6 +27,7 @@ class RemoteDataSource {
     }
   }
 
+  /// Returns a [Work] related to the [key].
   Future<Work?> getWork({
     required String key,
   }) async {
@@ -38,6 +41,7 @@ class RemoteDataSource {
     }
   }
 
+  /// Returns the [WorkEditions] related to the [key], [limit], and [offset].
   Future<WorkEditions?> getWorkEditions({
     required String key,
     required int limit,
@@ -54,6 +58,7 @@ class RemoteDataSource {
     }
   }
 
+  /// Returns an [Author] related to the [key].
   Future<Author?> getAuthor({
     required String key,
   }) async {

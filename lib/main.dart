@@ -17,11 +17,15 @@ import 'package:robin_book/ui/screens/book_search/book_search_screen.dart';
 import 'package:robin_book/ui/state_management/favorite_work_provider.dart';
 import 'package:robin_book/ui/state_management/work_provider.dart';
 
+/// The entry point for the application.
 void main() {
   runApp(const MyApp());
 }
 
+/// Represents the application.
 class MyApp extends StatelessWidget {
+
+  /// Returns the application.
   const MyApp({Key? key}) : super(key: key);
 
   @override
@@ -84,7 +88,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Robin Book',
         theme: ThemeData(
-          primarySwatch: Colors.deepPurple,
+          primarySwatch: Colors.indigo,
         ),
         initialRoute: BookSearchScreen.routeName,
         onGenerateRoute: RouteManager().getRoutes,

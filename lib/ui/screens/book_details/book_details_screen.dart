@@ -8,6 +8,7 @@ import 'package:robin_book/ui/screens/book_details/edition_item.dart';
 import 'package:robin_book/ui/screens/book_details/favorite_selector.dart';
 import 'package:robin_book/ui/state_management/work_provider.dart';
 
+/// Represents the Book Details screen.
 class BookDetailsScreen extends StatefulWidget {
   static const routeName = 'BookDetailsScreen';
   final Work work;
@@ -199,7 +200,7 @@ class _BookDetailsScreenState extends State<BookDetailsScreen> {
         ),
       ),
       onWillPop: () async {
-        workProvider.reset();
+        workProvider.resetWorkEditions();
         return true;
       }
     );

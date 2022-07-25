@@ -9,6 +9,7 @@ import 'package:robin_book/ui/screens/book_search/book_search_bar.dart';
 import 'package:robin_book/ui/screens/favorites/favorites_screen.dart';
 import 'package:robin_book/ui/state_management/work_provider.dart';
 
+/// Represents the Book Search screen.
 class BookSearchScreen extends StatefulWidget {
   static const routeName = 'BookSearchScreen';
 

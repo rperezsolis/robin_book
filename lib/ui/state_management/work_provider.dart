@@ -9,6 +9,7 @@ import 'package:robin_book/domain/use_cases/work/get_work_editions_use_case.dart
 import 'package:robin_book/domain/use_cases/work/get_work_use_case.dart';
 import 'package:robin_book/domain/use_cases/work/search_works_by_title_or_author_use_case.dart';
 
+/// Class for managing the state of works.
 class WorkProvider extends ChangeNotifier {
   static const workPageSize = 20;
   static const editionPageSize = 10;
@@ -57,13 +58,15 @@ class WorkProvider extends ChangeNotifier {
         _getWorkUseCase = getWorkUseCase,
         _searchWorksByTitleOrAuthorUseCase = searchWorksByTitleOrAuthorUseCase;
 
+  /// Returns a [WorkSearch] related to the [keyword], [limit], and [offset].
+  /// Handles the paging logic.
   Future<void> searchWorksByTitleOrAuthor({
     required bool isFirstPage,
     required String keyword
   }) async {
     lastKeyword = keyword;
     if (isFirstPage) {
-      reset();
+      resetWorks();
       _isLoadingFirstPage = true;
       notifyListeners();
       _workSearch = await _searchWorksByTitleOrAuthor(
@@ -90,18 +93,7 @@ class WorkProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<WorkSearch?> _searchWorksByTitleOrAuthor({
-    required String keyword,
-    required int limit,
-    required int offset
-  }) async {
-    return await _searchWorksByTitleOrAuthorUseCase.invoke(
-        keyword: keyword,
-        limit: limit,
-        offset: offset
-    );
-  }
-
+  /// Returns a [Work] related to the [key].
   getWork({
     required String key,
   }) async {
@@ -113,11 +105,14 @@ class WorkProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Returns the [WorkEditions] related to the [key], [limit], and [offset].
+  /// Handles the paging logic.
   getWorkEditions({
     required String key,
     required bool isFirstPage
   }) async {
     if (isFirstPage) {
+      resetWorkEditions();
       _currentWorkEditions = await _getWorkEditions(
           key: key,
           limit: editionPageSize,
@@ -136,6 +131,18 @@ class WorkProvider extends ChangeNotifier {
       }
     }
     notifyListeners();
+  }
+
+  Future<WorkSearch?> _searchWorksByTitleOrAuthor({
+    required String keyword,
+    required int limit,
+    required int offset
+  }) async {
+    return await _searchWorksByTitleOrAuthorUseCase.invoke(
+        keyword: keyword,
+        limit: limit,
+        offset: offset
+    );
   }
 
   Future<WorkEditions?> _getWorkEditions({
@@ -165,12 +172,21 @@ class WorkProvider extends ChangeNotifier {
     }
   }
 
-  reset() {
+  /// Resets the variables related to the works paging.
+  resetWorks() {
     _currentWork = null;
     _currentWorkEditions = null;
     _currentAuthors = null;
     _workPageLimit = workPageSize;
     _workPageOffset = 0;
+    _workEditionsPageLimit = editionPageSize;
+    _workEditionsPageOffset = 0;
+    notifyListeners();
+  }
+
+  /// Resets the variables related to the work editions paging.
+  resetWorkEditions() {
+    _currentWorkEditions = null;
     _workEditionsPageLimit = editionPageSize;
     _workEditionsPageOffset = 0;
     notifyListeners();
