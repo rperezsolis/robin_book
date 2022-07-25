@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:robin_book/domain/enums/picture_size.dart';
-import 'package:robin_book/domain/work_search/work_search_item.dart';
+import 'package:robin_book/domain/models/enums/picture_size.dart';
+import 'package:robin_book/domain/models/work_search/work_search_item.dart';
 
 class BookItem extends StatelessWidget {
   final WorkSearchItem workSearchItem;
