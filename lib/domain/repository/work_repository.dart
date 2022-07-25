@@ -16,43 +16,37 @@ class WorkRepository {
   }) : _workDatabase = workDatabase,
         _remoteDataSource = remoteDataSource;
 
-  /// Returns a [WorkSearch] related to the [keyword], [limit], and [offset].
-  Future<WorkSearch?> searchWorksByTitleOrAuthor({
+  /// Returns a [WorkSearch] related to the [keyword], [limit], and [offset]
+  /// from the cache if any.
+  Future<WorkSearch?> searchWorksByTitleOrAuthorFromCache({
     required String keyword,
     required int limit,
     required int offset
   }) async {
-    WorkSearch? localWorkSearch = await _workDatabase.getWorkSearch(
+    return await _workDatabase.getWorkSearch(
         keyword: keyword,
         limit: limit,
         offset: offset
     );
-    if (localWorkSearch != null) {
-      _updateLocalWorkSearch(
-          keyword: keyword,
-          limit: limit,
-          offset: offset,
-      );
-      return localWorkSearch;
-    } else {
-      WorkSearch? remoteWorkSearch = await _remoteDataSource.searchWorksByTitleOrAuthor(
-          keyword: keyword,
-          limit: limit,
-          offset: offset
-      );
-      await _updateLocalWorkSearch(
-          keyword: keyword,
-          limit: limit,
-          offset: offset,
-          workSearch: remoteWorkSearch
-      );
-      return remoteWorkSearch;
-    }
+  }
+
+  /// Returns a [WorkSearch] related to the [keyword], [limit], and [offset]
+  /// from the network if any.
+  Future<WorkSearch?> searchWorksByTitleOrAuthorFromNetwork({
+    required String keyword,
+    required int limit,
+    required int offset
+  }) async {
+    return await _remoteDataSource.searchWorksByTitleOrAuthor(
+        keyword: keyword,
+        limit: limit,
+        offset: offset
+    );
   }
 
   /// Updates the cached value for the [workSearch]. [keyword], [limit], and
   /// [offset] are necessary to identify the saved value.
-  Future<void> _updateLocalWorkSearch({
+  Future<void> updateLocalWorkSearch({
     required String keyword,
     required int limit,
     required int offset,

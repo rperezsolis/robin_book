@@ -15,10 +15,33 @@ class SearchWorksByTitleOrAuthorUseCase {
     required int limit,
     required int offset
   }) async {
-    return await _workRepository.searchWorksByTitleOrAuthor(
+    WorkSearch? localWorkSearch = await _workRepository.searchWorksByTitleOrAuthorFromCache(
         keyword: keyword,
         limit: limit,
         offset: offset
     );
+    if (localWorkSearch != null) {
+      _workRepository.updateLocalWorkSearch(
+        keyword: keyword,
+        limit: limit,
+        offset: offset,
+      );
+      return localWorkSearch;
+    } else {
+      WorkSearch? remoteWorkSearch = await _workRepository.searchWorksByTitleOrAuthorFromNetwork(
+          keyword: keyword,
+          limit: limit,
+          offset: offset
+      );
+      if (remoteWorkSearch != null) {
+        await _workRepository.updateLocalWorkSearch(
+            keyword: keyword,
+            limit: limit,
+            offset: offset,
+            workSearch: remoteWorkSearch
+        );
+      }
+      return remoteWorkSearch;
+    }
   }
 }
